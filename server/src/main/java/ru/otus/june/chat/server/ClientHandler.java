@@ -25,7 +25,8 @@ public class ClientHandler {
         this.in = new DataInputStream(socket.getInputStream());
         this.out = new DataOutputStream(socket.getOutputStream());
         usersCount++;
-        this.username = "user" + usersCount;
+        sendMessage("Укажите ваше имя: ");
+        this.username = "user_" + in.readUTF().toLowerCase();
         new Thread(() -> {
             try {
                 System.out.println("Подключился новый клиент");
@@ -35,6 +36,9 @@ public class ClientHandler {
                         if (message.equals("/exit")) {
                             sendMessage("/exitok");
                             break;
+                        }
+                        if (message.equals("/w tom Hello") && username.equals("user_tom")) {
+                            sendMessage("Hello");
                         }
                         continue;
                     }
