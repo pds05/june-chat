@@ -8,11 +8,17 @@ public class InMemoryAuthenticationProvider implements AuthenticationProvider {
         private String login;
         private String password;
         private String username;
+        private AuthorizationRole role;
 
-        public User(String login, String password, String username) {
+        public User(String login, String password, String username, AuthorizationRole role) {
             this.login = login;
             this.password = password;
             this.username = username;
+            if(role != null) {
+                this.role = role;
+            } else {
+                this.role = AuthorizationRole.USER;
+            }
         }
     }
 
@@ -22,9 +28,10 @@ public class InMemoryAuthenticationProvider implements AuthenticationProvider {
     public InMemoryAuthenticationProvider(Server server) {
         this.server = server;
         this.users = new ArrayList<>();
-        this.users.add(new User("login1", "pass1", "bob"));
-        this.users.add(new User("login2", "pass2", "user2"));
-        this.users.add(new User("login3", "pass3", "user3"));
+        this.users.add(new User("login1", "pass1", "bob", AuthorizationRole.USER));
+        this.users.add(new User("login2", "pass2", "user2", AuthorizationRole.USER));
+        this.users.add(new User("login3", "pass3", "user3", AuthorizationRole.USER));
+        this.users.add(new User("superuser", "superuser", "superuser", AuthorizationRole.ADMIN));
     }
 
     @Override
@@ -44,6 +51,15 @@ public class InMemoryAuthenticationProvider implements AuthenticationProvider {
     private boolean isLoginAlreadyExist(String login) {
         for (User u : users) {
             if (u.login.equals(login)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isAuthorizationRole(String username, AuthorizationRole role) {
+        for(User user : users) {
+            if(user.username.equals(username) && user.role == role) {
                 return true;
             }
         }
@@ -77,7 +93,7 @@ public class InMemoryAuthenticationProvider implements AuthenticationProvider {
     }
 
     @Override
-    public boolean registration(ClientHandler clientHandler, String login, String password, String username) {
+    public boolean registration(ClientHandler clientHandler, String login, String password, String username, AuthorizationRole role) {
         if (login.trim().length() < 3 || password.trim().length() < 6 || username.trim().length() < 1) {
             clientHandler.sendMessage("Логин 3+ символа, Пароль 6+ символов, Имя пользователя 1+ символ");
             return false;
@@ -90,7 +106,7 @@ public class InMemoryAuthenticationProvider implements AuthenticationProvider {
             clientHandler.sendMessage("Указанное имя пользователя уже занято");
             return false;
         }
-        users.add(new User(login, password, username));
+        users.add(new User(login, password, username, role));
         clientHandler.setUsername(username);
         server.subscribe(clientHandler);
         clientHandler.sendMessage("/regok " + username);

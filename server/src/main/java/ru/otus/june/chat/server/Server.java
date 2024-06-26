@@ -57,4 +57,15 @@ public class Server {
         }
         return false;
     }
+
+    public synchronized boolean kickUsername(String username){
+        for (ClientHandler c : clients) {
+            if (c.getUsername().equals(username)) {
+                c.sendMessage("Вы отключены от чата");
+                c.disconnect();
+                return true;
+            }
+        }
+        return false;
+    }
 }

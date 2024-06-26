@@ -51,7 +51,7 @@ public class ClientHandler {
                             sendMessage("Неверный формат команды /register");
                             continue;
                         }
-                        if (server.getAuthenticationProvider().registration(this, elements[1], elements[2], elements[3])) {
+                        if (server.getAuthenticationProvider().registration(this, elements[1], elements[2], elements[3], AuthorizationRole.USER)) {
                             break;
                         }
                         continue;
@@ -64,6 +64,27 @@ public class ClientHandler {
                         if (message.equals("/exit")) {
                             sendMessage("/exitok");
                             break;
+                        }
+                        if(message.startsWith("/kick ")) {
+                            String[] elements = message.split(" ");
+                            if (elements.length != 2) {
+                                sendMessage("Неверный формат команды /kick");
+                                continue;
+                            }
+                            if(server.getAuthenticationProvider() instanceof InMemoryAuthenticationProvider) {
+                                if(((InMemoryAuthenticationProvider) server.getAuthenticationProvider()).isAuthorizationRole(username, AuthorizationRole.ADMIN)) {
+                                    if(server.kickUsername(elements[1])) {
+                                        sendMessage("/kickok пользователь " + elements[1] + " отключен от чата");
+                                    } else {
+                                        sendMessage("Пользователь " + elements[1] + " отсутствует в чате");
+                                    }
+                                } else {
+                                    sendMessage("Команда /kick недоступна");
+                                }
+                            } else {
+                                sendMessage("Внутренняяя ошибка. Команда /kick временно недоступна");
+                            }
+                            continue;
                         }
                         continue;
                     }
