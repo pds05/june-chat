@@ -10,18 +10,26 @@ import java.util.Map;
 public class Server {
     private int port;
     private Map<String, ClientHandler> clients;
+    private AuthenticationProvider authenticationProvider;
 
     public Server(int port) {
         this.port = port;
         this.clients = new HashMap<>();
+        this.authenticationProvider = new InMemoryAuthenticationProvider(this);
     }
+
+    public AuthenticationProvider getAuthenticationProvider() {
+        return authenticationProvider;
+    }
+
 
     public void start() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             System.out.println("Сервер запущен на порту: " + port);
+            authenticationProvider.initialize();
             while (true) {
                 Socket socket = serverSocket.accept();
-                subscribe(new ClientHandler(this, socket));
+                new ClientHandler(this, socket);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -46,5 +54,24 @@ public class Server {
 
     public ClientHandler getClientHandler(String username) {
         return clients.get(username);
+
+    public boolean isUsernameBusy(String username) {
+        for (ClientHandler c : clients) {
+            if (c.getUsername().equals(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public synchronized boolean kickUsername(String username){
+        for (ClientHandler c : clients) {
+            if (c.getUsername().equals(username)) {
+                c.sendMessage("Вы отключены от чата");
+                c.disconnect();
+                return true;
+            }
+        }
+        return false;
     }
 }
