@@ -2,9 +2,7 @@ package ru.otus.june.chat.server;
 
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Server {
@@ -54,9 +52,10 @@ public class Server {
 
     public ClientHandler getClientHandler(String username) {
         return clients.get(username);
+    }
 
     public boolean isUsernameBusy(String username) {
-        for (ClientHandler c : clients) {
+        for (ClientHandler c : clients.values()) {
             if (c.getUsername().equals(username)) {
                 return true;
             }
@@ -65,7 +64,7 @@ public class Server {
     }
 
     public synchronized boolean kickUsername(String username){
-        for (ClientHandler c : clients) {
+        for (ClientHandler c : clients.values()) {
             if (c.getUsername().equals(username)) {
                 c.sendMessage("Вы отключены от чата");
                 c.disconnect();

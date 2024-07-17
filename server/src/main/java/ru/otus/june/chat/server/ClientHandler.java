@@ -25,7 +25,6 @@ public class ClientHandler {
         this.socket = socket;
         this.in = new DataInputStream(socket.getInputStream());
         this.out = new DataOutputStream(socket.getOutputStream());
-        usersCount++;
         sendMessage("Укажите ваше имя: ");
         this.username = in.readUTF().toLowerCase();
         new Thread(() -> {
@@ -70,21 +69,22 @@ public class ClientHandler {
                         }
                         if (message.startsWith("/w")) {
                             String[] elenements = message.split(" ");
-                            if(elenements[1].toLowerCase().equals("tom")){
+                            if (elenements[1].toLowerCase().equals("tom")) {
                                 ClientHandler client = server.getClientHandler(elenements[1]);
-                                if(client != null) {
+                                if (client != null) {
                                     client.sendMessage(username + ": " + elenements[2]);
                                 }
                             }
-                        if(message.startsWith("/kick ")) {
+                        }
+                        if (message.startsWith("/kick ")) {
                             String[] elements = message.split(" ");
                             if (elements.length != 2) {
                                 sendMessage("Неверный формат команды /kick");
                                 continue;
                             }
-                            if(server.getAuthenticationProvider() instanceof InMemoryAuthenticationProvider) {
-                                if(((InMemoryAuthenticationProvider) server.getAuthenticationProvider()).isAuthorizationRole(username, AuthorizationRole.ADMIN)) {
-                                    if(server.kickUsername(elements[1])) {
+                            if (server.getAuthenticationProvider() instanceof InMemoryAuthenticationProvider) {
+                                if (((InMemoryAuthenticationProvider) server.getAuthenticationProvider()).isAuthorizationRole(username, AuthorizationRole.ADMIN)) {
+                                    if (server.kickUsername(elements[1])) {
                                         sendMessage("/kickok пользователь " + elements[1] + " отключен от чата");
                                     } else {
                                         sendMessage("Пользователь " + elements[1] + " отсутствует в чате");
