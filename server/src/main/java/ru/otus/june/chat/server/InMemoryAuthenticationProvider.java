@@ -1,5 +1,7 @@
 package ru.otus.june.chat.server;
 
+import ru.otus.june.chat.server.entity.User;
+
 import java.util.ArrayList;
 import java.util.List;
 

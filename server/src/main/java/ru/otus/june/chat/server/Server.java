@@ -13,7 +13,7 @@ public class Server {
     public Server(int port) {
         this.port = port;
         this.clients = new HashMap<>();
-        this.authenticationProvider = new InMemoryAuthenticationProvider(this);
+        this.authenticationProvider = new UserServiceImpl(this);
     }
 
     public AuthenticationProvider getAuthenticationProvider() {
@@ -36,11 +36,17 @@ public class Server {
 
     public synchronized void subscribe(ClientHandler clientHandler) {
         broadcastMessage("В чат зашел: " + clientHandler.getUsername());
+        if (authenticationProvider instanceof UserService) {
+            ((UserService) authenticationProvider).connectUser(clientHandler.getUser());
+        }
         clients.put(clientHandler.getUsername(), clientHandler);
     }
 
     public synchronized void unsubscribe(ClientHandler clientHandler) {
         clients.remove(clientHandler);
+        if (authenticationProvider instanceof UserService) {
+            ((UserService) authenticationProvider).disconnectUser(clientHandler.getUser());
+        }
         broadcastMessage("Из чата вышел: " + clientHandler.getUsername());
     }
 

@@ -1,5 +1,7 @@
 package ru.otus.june.chat.server;
 
+import ru.otus.june.chat.server.entity.User;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -10,6 +12,7 @@ public class ClientHandler {
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
+    private User user;
     private String username;
 
     public String getUsername() {
@@ -20,13 +23,20 @@ public class ClientHandler {
         this.username = username;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+        this.username = user.getUsername();
+    }
+
     public ClientHandler(Server server, Socket socket) throws IOException {
         this.server = server;
         this.socket = socket;
         this.in = new DataInputStream(socket.getInputStream());
         this.out = new DataOutputStream(socket.getOutputStream());
-        sendMessage("Укажите ваше имя: ");
-        this.username = in.readUTF().toLowerCase();
         new Thread(() -> {
             try {
                 System.out.println("Подключился новый клиент");
@@ -92,6 +102,12 @@ public class ClientHandler {
                                 } else {
                                     sendMessage("Команда /kick недоступна");
                                 }
+                            } else if (server.getAuthenticationProvider() instanceof UserService)  {
+                                UserService userService = (UserService) server.getAuthenticationProvider();
+                                User kickedUser = userService.getUser(elements[1]);
+
+
+
                             } else {
                                 sendMessage("Внутренняяя ошибка. Команда /kick временно недоступна");
                             }
