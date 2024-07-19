@@ -1,10 +1,10 @@
-package ru.otus.june.chat.server.entity;
+package ru.otus.june.chat.server.providers.jdbc.entity;
 
 import java.util.Date;
 import java.util.List;
 
 public class User {
-    private int id;
+    private Integer id;
     private String username;
     private String login;
     private String password;
@@ -12,10 +12,11 @@ public class User {
     private long phoneNumber;
     private boolean isActive;
     private Date registrationDate;
-    private Date kickDate;
+    private Date deactivationDate;
     private List<UserRole> userRoles;
+    private UserActivity activity;
 
-    public User(int id, String username, String login, String password, String email, long phoneNumber, boolean isActive, Date registrationDate, Date kickDate) {
+    public User(Integer id, String username, String login, String password, String email, long phoneNumber, boolean isActive, Date registrationDate, Date deactivationDate) {
         this.id = id;
         this.username = username;
         this.login = login;
@@ -24,7 +25,7 @@ public class User {
         this.phoneNumber = phoneNumber;
         this.isActive = isActive;
         this.registrationDate = registrationDate;
-        this.kickDate = kickDate;
+        this.deactivationDate = deactivationDate;
     }
 
     public User(String username, String login, String password, String email, long phoneNumber, boolean isActive, Date registrationDate) {
@@ -39,11 +40,11 @@ public class User {
 
     public User(){};
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -103,12 +104,12 @@ public class User {
         this.registrationDate = registrationDate;
     }
 
-    public Date getKickDate() {
-        return kickDate;
+    public Date getDeactivationDate() {
+        return deactivationDate;
     }
 
-    public void setKickDate(Date kickDate) {
-        this.kickDate = kickDate;
+    public void setDeactivationDate(Date deactivationDate) {
+        this.deactivationDate = deactivationDate;
     }
 
     public List<UserRole> getUserRoles() {
@@ -117,6 +118,14 @@ public class User {
 
     public void setUserRoles(List<UserRole> userRoles) {
         this.userRoles = userRoles;
+    }
+
+    public UserActivity getActivity() {
+        return activity;
+    }
+
+    public void setActivity(UserActivity activity) {
+        this.activity = activity;
     }
 
     @Override
@@ -130,8 +139,9 @@ public class User {
                 ", phoneNumber=" + phoneNumber +
                 ", isActive=" + isActive +
                 ", registrationDate=" + registrationDate +
-                ", kickDate=" + kickDate +
+                ", deactivationDate=" + deactivationDate +
                 ", userRoles=" + userRoles +
+                ", activity=" + activity +
                 '}';
     }
 }
