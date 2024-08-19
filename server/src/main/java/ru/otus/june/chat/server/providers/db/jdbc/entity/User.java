@@ -1,4 +1,4 @@
-package ru.otus.june.chat.server.providers.jdbc.entity;
+package ru.otus.june.chat.server.providers.db.jdbc.entity;
 
 import java.util.Date;
 import java.util.List;
@@ -8,32 +8,27 @@ public class User {
     private String username;
     private String login;
     private String password;
-    private String email;
-    private long phoneNumber;
     private boolean isActive;
     private Date registrationDate;
     private Date deactivationDate;
     private List<UserRole> userRoles;
     private UserActivity activity;
+    private List<Quiz> quizzes;
 
-    public User(Integer id, String username, String login, String password, String email, long phoneNumber, boolean isActive, Date registrationDate, Date deactivationDate) {
+    public User(Integer id, String username, String login, String password, boolean isActive, Date registrationDate, Date deactivationDate) {
         this.id = id;
         this.username = username;
         this.login = login;
         this.password = password;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
         this.isActive = isActive;
         this.registrationDate = registrationDate;
         this.deactivationDate = deactivationDate;
     }
 
-    public User(String username, String login, String password, String email, long phoneNumber, boolean isActive, Date registrationDate) {
+    public User(String username, String login, String password, boolean isActive, Date registrationDate) {
         this.username = username;
         this.login = login;
         this.password = password;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
         this.isActive = isActive;
         this.registrationDate = registrationDate;
     }
@@ -70,22 +65,6 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public long getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(long phoneNumber) {
-        this.phoneNumber = phoneNumber;
     }
 
     public boolean isActive() {
@@ -128,6 +107,14 @@ public class User {
         this.activity = activity;
     }
 
+    public List<Quiz> getQuizzes() {
+        return quizzes;
+    }
+
+    public void setQuizzes(List<Quiz> quizzes) {
+        this.quizzes = quizzes;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -135,13 +122,12 @@ public class User {
                 ", username='" + username + '\'' +
                 ", login='" + login + '\'' +
                 ", password='" + password + '\'' +
-                ", email='" + email + '\'' +
-                ", phoneNumber=" + phoneNumber +
                 ", isActive=" + isActive +
                 ", registrationDate=" + registrationDate +
                 ", deactivationDate=" + deactivationDate +
                 ", userRoles=" + userRoles +
                 ", activity=" + activity +
+                ", quizzes=" + quizzes +
                 '}';
     }
 }

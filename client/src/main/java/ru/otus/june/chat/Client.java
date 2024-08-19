@@ -1,12 +1,20 @@
 package ru.otus.june.chat;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import com.google.gson.Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
 import java.net.Socket;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class Client {
+    public static final Logger logger = LoggerFactory.getLogger(Client.class.getName());
+
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
@@ -20,30 +28,37 @@ public class Client {
             try {
                 while (true) {
                     String message = in.readUTF();
-                    if (message.equals("/exitok")) {
+                    if (message.equals("/exit-ok")) {
                         break;
                     }
-                    if (message.startsWith("/authok ")) {
-                        System.out.println("Удалось успешно войти в чат под именем пользователя: " + message.split(" ")[1]);
-                        continue;
-                    }
-                    if (message.startsWith("/regok ")) {
-                        System.out.println("Удалось успешно пройти регистрацию и войти в чат под именем пользователя: " + message.split(" ")[1]);
-                        continue;
-                    }
                     System.out.println(message);
+                    logger.debug(message);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("Сбой входяего потока {}", e.getMessage(), e);
             } finally {
                 disconnect();
             }
         }).start();
         while (true) {
             String message = scanner.nextLine();
-            out.writeUTF(message);
             if (message.equals("/exit")) {
                 break;
+            }
+            if (message.startsWith("/upload")) {
+                String[] elements = message.split(" ");
+                String path = elements[1].trim();
+                try {
+                    String jsonFile = Files.readString(Paths.get(path), Charset.forName("UTF-8"));
+                    message = elements[0] + " " + jsonFile;
+                } catch (NoSuchFileException e) {
+                    logger.info("Файл не обнаружен " + path);
+                    continue;
+                }
+            }
+            if (!message.isEmpty()) {
+                out.writeUTF(message);
+                out.flush();
             }
         }
     }
@@ -53,22 +68,34 @@ public class Client {
             if (in != null) {
                 in.close();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
             if (out != null) {
                 out.close();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
             if (socket != null) {
                 socket.close();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Ошибка закрытия сетевого подключения {}", e.getMessage(), e);
         }
+    }
+
+    public static File[] readDir(String homeDir) {
+        File dir = new File(Paths.get(homeDir).toAbsolutePath().toString());
+        return dir.listFiles(pathname -> {
+            String fileName = pathname.getName();
+            if (pathname.isFile() && fileName.endsWith(".json") && fileName.startsWith("quiz")) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    public static File getFile(File[] files, String fileName) {
+        for (File file : files) {
+            if (file.getName().equals(fileName)) {
+                return file;
+            }
+        }
+        return null;
     }
 }
