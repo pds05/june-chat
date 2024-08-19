@@ -3,11 +3,12 @@ package ru.otus.june.chat.server.providers;
 import ru.otus.june.chat.server.ClientHandler;
 
 public interface AuthenticationProvider {
+
     void initialize();
 
-    boolean authenticate(ClientHandler clientHandler, String login, String password);
+    void authenticate(ClientHandler clientHandler, String login, String password) throws AuthException;
 
-    boolean registration(ClientHandler clientHandler, String login, String password, String username, String email, String phoneNumber);
+    void registration(ClientHandler clientHandler, String login, String password, String username) throws AuthException;
 
     boolean authorization(ClientHandler clientHandler, String command);
 }

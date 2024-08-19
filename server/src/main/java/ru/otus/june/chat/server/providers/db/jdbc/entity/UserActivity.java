@@ -1,4 +1,4 @@
-package ru.otus.june.chat.server.providers.jdbc.entity;
+package ru.otus.june.chat.server.providers.db.jdbc.entity;
 
 import java.util.Date;
 
