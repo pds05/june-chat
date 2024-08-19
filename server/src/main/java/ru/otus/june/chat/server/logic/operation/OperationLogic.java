@@ -186,8 +186,9 @@ public class OperationLogic {
                     if (!server.getQuizLogic().isClientQuizBusy(targetClient)) {
                         targetClient.sendMessage(clientHandler.getUsername() + ": " + elements[2]);
                         clientHandler.sendMessage("/w-ok");
+                    } else {
+                        clientHandler.sendMessage("/w-nok пользователь занят");
                     }
-                    clientHandler.sendMessage("/w-nok пользователь занят");
                 } else {
                     clientHandler.sendMessage("/w-nok пользователь отсутсвует");
                 }
